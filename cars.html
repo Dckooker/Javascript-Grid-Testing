@@ -1,0 +1,138 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Homework 5</title>
+
+  </head>
+
+	<body ng-app="myApp" ng-controller="ListControl"> 
+    <h1>Cars For Sale</h1> 
+    <table border=1> 
+        <thead> 
+            <tr> 
+                <th>Manufacturer: 
+                  <select ng-model="selectedCar">
+                    <option ng-repeat="x in carList | findDuplicates: 'manufacturer' " value="{{x.manufacturer }}">{{x.manufacturer }}</option>
+                    <option value="">All</option>
+                    </select>
+                </th>  
+
+                <th>model</th> 
+                <th ng-click='sortColumn("year")' ng-class='sortClass("year")'>year</th> 
+                <th>stock</th> 
+                <th>price</th> 
+                <th>option</th> 
+            </tr>   
+        </thead> 
+        <tr ng-repeat="item in carList | filter:selectedCar | orderBy:column:reverse "> 
+            <td> {{item.manufacturer}} </td> 
+            <td> {{item.model}} </td> 
+            <td>{{item.year}} </td> 
+            <td> {{item.stock + count}} </td> 
+            <td> {{item.price | currency}} </td>
+            <td> <button ng-click="count = count + 1" ng-init="count=0">Increment</button> </td>  
+        </tr> 
+    </table> 
+
+    <style>
+        table th:hover{
+        cursor: pointer;
+        }
+
+        .arrow-down:after,.arrow-up:after{
+        content: ' ';
+        position: relative;
+        left: 2px;
+        border: 8px solid transparent;
+        }
+
+        .arrow-down:after{
+        top: 10px;
+        border-top-color: black;
+        }
+
+        .arrow-up:after{
+        bottom: 15px;
+        border-bottom-color: black;
+        }
+
+        .arrow-down,.arrow-up{
+        padding-right: 10px;
+        }
+    </style>
+  
+   
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular.min.js"></script>
+    <script src="cars.js"></script>
+
+    <script>
+      var app = angular.module('myApp', []); 
+
+      app.filter('findDuplicates', function() {
+        return function(collection, keyname) {
+       
+        var output = [],
+          keys = [];
+
+        angular.forEach(collection, function(item) {
+          
+          var key = item[keyname];
+          
+          if (keys.indexOf(key) === -1) {  
+            keys.push(key);
+            output.push(item);
+          }
+        });
+        return output;
+      };
+    });
+
+      app.controller( 
+        'ListControl', function($scope) { 
+          $scope.carList = totalCarsList;
+
+          
+
+          $scope.column = 'year';
+ 
+          // sort ordering (Ascending or Descending). Set true for desending
+          $scope.reverse = false; 
+          
+          // called on header click
+          $scope.sortColumn = function(col){
+            $scope.column = col;
+            if($scope.reverse){
+            $scope.reverse = false;
+            $scope.reverseclass = 'arrow-up';
+            }else{
+            $scope.reverse = true;
+            $scope.reverseclass = 'arrow-down';
+            }
+          };
+          
+          // remove and change class
+          $scope.sortClass = function(col){
+            if($scope.column == col ){
+            if($scope.reverse){
+              return 'arrow-down'; 
+            }else{
+              return 'arrow-up';
+            }
+            }else{
+            return '';
+            }
+          };
+          
+
+      }); 
+
+    
+
+
+    
+    </script>
+
+  </body>
+</html>
